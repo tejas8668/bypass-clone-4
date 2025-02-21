@@ -2493,7 +2493,7 @@ def kingurl(url, retry=False):
             print(f"Error occurred: {e}. Retrying...")
             return kingurl(url, retry=True)
         else:
-            return "Something went wrong :("
+            return "Something went wrong :( PLEASE TRY AGAIG )"
 
 
 '''def kingurl(url):
