@@ -2449,13 +2449,13 @@ def thinfi(url: str) -> str:
 # kingurl
 
 
-def kingurl1(url):
+def kingurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     DOMAIN = "https://go.kingurl.in/"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{DOMAIN}/{code}"
-    ref = "https://earnbox.bankshiksha.in/"
+    ref = "https://rg.freshbhojpuri.com/"
     h = {"referer": ref}
     resp = client.get(final_url, headers=h)
     soup = BeautifulSoup(resp.content, "html.parser")
@@ -2470,12 +2470,12 @@ def kingurl1(url):
         return "Something went wrong :("
 
 
-def kingurl(url):
+'''def kingurl(url):
     DOMAIN = "https://earn.bankshiksha.in/click.php?LinkShortUrlID"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{DOMAIN}={code}"
-    return final_url
+    return final_url'''
 #####################################################################################################
 # helpers
 
