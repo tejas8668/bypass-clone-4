@@ -2355,13 +2355,13 @@ def rslinks(url):
 
 #########################
 # vipurl
-'''def vipurl(url):
+def vipurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     DOMAIN = "https://count.vipurl.in/"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{DOMAIN}/{code}"
-    ref = "https://bheemjyoti.in/"
+    ref = "https://loanoffer.cc/"
     h = {"referer": ref}
     response = client.get(final_url, headers=h)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -2373,9 +2373,9 @@ def rslinks(url):
     try:
         return r.json()["url"]
     except BaseException:
-        return "Something went wrong :("'''
+        return "Something went wrong :("
 
-def vipurl(url):
+'''def vipurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     DOMAIN = "https://count.vipurl.in/"
     url = url[:-1] if url[-1] == "/" else url
@@ -2394,7 +2394,7 @@ def vipurl(url):
     try:
         return r.json()["url"]
     except:
-        return "Something went wrong :("
+        return "Something went wrong :("'''
 
 
 #####################################################################################################
