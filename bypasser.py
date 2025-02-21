@@ -1201,7 +1201,7 @@ def shortingly(url):
 
 
 def gyanilinks(url):
-    DOMAIN = "https://go.hipsonyc.com/"
+    DOMAIN = "https://golink.bloggerishyt.in/"
     client = cloudscraper.create_scraper(allow_brotli=False)
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
