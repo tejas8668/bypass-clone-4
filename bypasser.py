@@ -2566,7 +2566,7 @@ def runurl(url):
     except BaseException:
         return "Something went wrong :("'''
 
-def modijiurl(url: str):
+'''def modijiurl(url: str):
     client = cloudscraper.create_scraper(allow_brotli=False)
     token = url.split("/")[-1]
     domain = "https://modijiurl.com/"
@@ -2585,7 +2585,40 @@ def modijiurl(url: str):
     try:
         return bypassed_url
     except:
-        return "Something went wrong :("
+        return "Something went wrong :("'''
+
+
+def bypass_modijiurl(url: str):
+    def is_valid_url(url):
+        return re.match(r'^(?:https?|ftp):\/\/(?:\w+\.){1,3}\w+(?:\/\S*)?$', url) is not None
+
+    def get_param(url, param):
+        query_params = parse_qs(urlparse(url).query)
+        return query_params.get(param, [None])[0]
+
+    def redirect(url):
+        print(f"Redirecting to: {url}")
+
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    if re.match(r'^https:\/\/[^\/]+\/safe\.php\?link=https:\/\/modijiurl\.com\/[^\/]+\/\?mid=.*$', url):
+        redirect(get_param(url, 'link'))
+    elif re.match(r'^https:\/\/modijiurl\.com\/[^\/]+\/\?mid=.*$', url):
+        token = url.split("/")[-1]
+        domain = "https://modijiurl.com/"
+        referer = "https://short.gmsrweb.org/"
+        vid = client.get(url, allow_redirects=False).headers["Location"].split("=")[-1]
+        url = f"{url}/?{vid}"
+        response = client.get(url, allow_redirects=False)
+        soup = BeautifulSoup(response.content, "html.parser")
+        inputs = soup.find(id="go-link").find_all(name="input")
+        data = {input.get("name"): input.get("value") for input in inputs}
+        time.sleep(10)
+        headers = {"x-requested-with": "XMLHttpRequest"}
+        bypassed_url = client.post(domain + "links/go", data=data, headers=headers).json()["url"]
+        try:
+            return bypassed_url
+        except:
+            return "Something went wrong :("
 
 
 # check if present in list
@@ -2898,7 +2931,7 @@ def shortners(url):
 
     elif "https://modijiurl.com/" in url:
         print("entered modijiurl:", url)
-        return modijiurl(url)
+        return bypass_modijiurl(url)
 
     
     # htpmovies sharespark cinevood
