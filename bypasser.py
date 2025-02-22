@@ -2832,7 +2832,7 @@ def shortners(url):
 
     elif "https://runurl.in/" in url:
         print("entered runurl:", url)
-        return runur(url)
+        return runurl(url)
 
     # htpmovies sharespark cinevood
     elif (
