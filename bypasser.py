@@ -2505,6 +2505,26 @@ def kingurl(url, retry=False):
 #####################################################################################################
 # helpers
 
+def runurl(url):
+    DOMAIN = "https://get.runurl.in/"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    resp = client.get(final_url)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    try:
+        inputs = soup.find(id="go-link").find_all(name="input")
+    except:
+        return "Incorrect Link"
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(5)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return r.json()["url"]
+    except:
+        return "Something went wrong :("
 
 # check if present in list
 def ispresent(inlist, url):
@@ -2809,6 +2829,10 @@ def shortners(url):
     elif "https://kingurl.in/" in url:
         print("entered kingurl:", url)
         return kingurl(url)
+
+    elif "https://runurl.in/" in url:
+        print("entered runurl:", url)
+        return runur(url)
 
     # htpmovies sharespark cinevood
     elif (
