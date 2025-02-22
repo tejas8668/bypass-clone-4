@@ -2397,6 +2397,7 @@ def vipurl(url):
         return "Something went wrong :("'''
 
 
+
 #####################################################################################################
 # mdisky.link
 def mdisky(url):
@@ -2511,7 +2512,7 @@ def kingurl(url, retry=False):
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{DOMAIN}/{code}"
-    ref = "https://learna1.bgmi32bitapk.in/"
+    ref = "https://techybull.in/"
     h = {"referer": ref}
     resp = client.get(final_url, headers=h)
     soup = BeautifulSoup(resp.content, "html.parser")
@@ -2525,13 +2526,13 @@ def kingurl(url, retry=False):
     except BaseException:
         return "Something went wrong :("'''
 
-def runurl(url):
+'''def runurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     DOMAIN = "https://get.runurl.in/"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{DOMAIN}/{code}"
-    ref = "https://learna1.bgmi32bitapk.in/"
+    ref = "https://techybull.in/"
     h = {"referer": ref}
     resp = client.get(final_url, headers=h)
     soup = BeautifulSoup(resp.content, "html.parser")
@@ -2539,6 +2540,26 @@ def runurl(url):
     data = {input.get("name"): input.get("value") for input in inputs}
     h = {"x-requested-with": "XMLHttpRequest"}
     time.sleep(8)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong :("'''
+
+def runurl(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://get.runurl.in/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://techybull.in/"
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(7)
     r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
     try:
         return str(r.json()["url"])
