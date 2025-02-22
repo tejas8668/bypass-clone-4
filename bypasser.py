@@ -2526,7 +2526,7 @@ def kingurl(url, retry=False):
     except BaseException:
         return "Something went wrong :("'''
 
-'''def runurl(url):
+def runurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     DOMAIN = "https://get.runurl.in/"
     url = url[:-1] if url[-1] == "/" else url
@@ -2544,9 +2544,9 @@ def kingurl(url, retry=False):
     try:
         return str(r.json()["url"])
     except BaseException:
-        return "Something went wrong :("'''
+        return "Something went wrong :("
 
-def runurl(url):
+'''def runurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     DOMAIN = "https://get.runurl.in/"
     url = url[:-1] if url[-1] == "/" else url
@@ -2564,8 +2564,28 @@ def runurl(url):
     try:
         return str(r.json()["url"])
     except BaseException:
-        return "Something went wrong :("
+        return "Something went wrong :("'''
 
+def modijiurl(url: str):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    token = url.split("/")[-1]
+    domain = "https://modijiurl.com/"
+    referer = "https://short.gmsrweb.org/"
+    vid = client.get(url, allow_redirects=False).headers["Location"].split("=")[-1]
+    url = f"{url}/?{vid}"
+    response = client.get(url, allow_redirects=False)
+    soup = BeautifulSoup(response.content, "html.parser")
+    inputs = soup.find(id="go-link").find_all(name="input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    time.sleep(10)
+    headers = {"x-requested-with": "XMLHttpRequest"}
+    bypassed_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+        "url"
+    ]
+    try:
+        return bypassed_url
+    except:
+        return "Something went wrong :("
 
 
 # check if present in list
@@ -2876,6 +2896,11 @@ def shortners(url):
         print("entered runurl:", url)
         return runurl(url)
 
+    elif "https://modijiurl.com/" in url:
+        print("entered modijiurl:", url)
+        return modijiurl(url)
+
+    
     # htpmovies sharespark cinevood
     elif (
         "https://htpmovies." in url
