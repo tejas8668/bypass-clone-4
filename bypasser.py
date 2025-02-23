@@ -2377,7 +2377,7 @@ def rslinks(url):
 
 def vipurl(url, retry=False):
     client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://count.vipurl.in"
+    DOMAIN = "https://count.vipurl.in/"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{DOMAIN}/{code}"
@@ -2390,7 +2390,7 @@ def vipurl(url, retry=False):
         inputs = soup.find_all("input")
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
-        time.sleep(7)
+        time.sleep(10)
         r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
         return str(r.json()["url"])
     except BaseException as e:
