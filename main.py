@@ -254,7 +254,7 @@ async def send_start(client: Client, message: Message):
     )
     await app.send_message(
         message.chat.id,
-        f"__👋 Hi **{message.from_user.mention}**, I am Link Bypasser Bot. Just send me any supported links and I will get you results.\nCheckout /help to read more.__",
+        f"__👋 Hi **{message.from_user.mention}**, I am Link Bypasser Bot. Just send me any supported links and I will get you results.\nCheckout /help to read more.\n\nIf you face any issue with some sites please report error, We solve it as soon as possible.__",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -273,6 +273,12 @@ async def send_start(client: Client, message: Message):
                     InlineKeyboardButton(
                         "Dev Channel",
                         url="https://t.me/+WaXaosFDkGowYjI1",
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "Report Error",
+                        url="https://t.me/Assistant_24_7_bot",
                     )
                 ],
             ]
