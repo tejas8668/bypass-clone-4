@@ -134,6 +134,7 @@ shortlinks = """__- Gyanlinks \n\
 - runurl \n\
 - Primeurl \n\
 - earn4link \n\
+- tryshort \n\
     __"""
 
 
