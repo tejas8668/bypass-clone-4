@@ -132,7 +132,7 @@ shortlinks = """__- Gyanlinks \n\
 - Krownlinks \n\
 - kingurl \n\
 - runurl \n\
-- Primeurl \n\
+- Primeurl \n\n\
 - earn4link \n\
 - tryshort \n\
     __"""
