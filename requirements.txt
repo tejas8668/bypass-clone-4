@@ -10,3 +10,6 @@ urllib3==1.26
 flask
 gunicorn
 curl-cffi
+
+pymongo[srv]==4.2.0
+python-telegram-bot[webhooks]==20.3
