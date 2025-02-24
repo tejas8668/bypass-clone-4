@@ -135,6 +135,7 @@ shortlinks = """__- Gyanlinks \n\
 - Primeurl \n\n\
 - earn4link \n\
 - tryshort \n\
+- adlinkfly \n\
     __"""
 
 
