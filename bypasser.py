@@ -2668,6 +2668,27 @@ def inshorturl(url):
     except BaseException:
         return "Something went wrong, Please try again"
 
+#adlinkfly.in
+def adlinkfly(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://go.adlinkfly.in"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://earn.punjabworks.com/"
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(7)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
+
 
 # check if present in list
 def ispresent(inlist, url):
@@ -2996,6 +3017,10 @@ def shortners(url):
     elif "https://inshorturl.com/" in url:
         print("entered inshorturl:", url)
         return inshorturl(url)
+
+    elif "https://adlinkfly.in/" in url:
+        print("entered adlinkfly:", url)
+        return adlinkfly(url)
 
 
     
