@@ -139,5 +139,5 @@ shortlinks = """__- Gyanlinks \n\
 
 HELP_TEXT = f"**--Just Send me any Supported Links From Below Mentioned Sites--** \n\n\
 **Supported Short Links : ** \n\n{shortlinks}"\n\n
-**We Adding New Sites Every Hour** \n\n
-**You can send us a request for the site you want to see first.**
+**We Adding New Sites Every Hour ** \n\n
+**You can send us a request for the site you want to see first. **
