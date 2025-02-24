@@ -4,6 +4,7 @@ from pyrogram.types import (
     InlineKeyboardButton,
     BotCommand,
     Message,
+    CallbackQuery,
 )
 from os import environ, remove
 from threading import Thread
@@ -240,6 +241,13 @@ def send_help(
         disable_web_page_preview=True,
     )
 
+# callback query handler
+@app.on_callback_query(filters.regex("send_help"))
+def callback_help(client: Client, callback_query: CallbackQuery):
+    callback_query.message.edit_text(
+        HELP_TEXT,
+        disable_web_page_preview=True,
+    )
 
 # links
 @app.on_message(filters.text)
