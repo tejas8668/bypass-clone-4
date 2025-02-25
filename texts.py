@@ -137,6 +137,9 @@ shortlinks = """__- Gyanlinks \n\
 - tryshort \n\
 - adlinkfly \n\
 - inshorturl \n\
+- urlstox \n\n\
+- yamlinks \n\
+- shortxpro \n\
     __"""
 
 
