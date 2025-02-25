@@ -229,16 +229,25 @@ async def send_start(client: Client, message: Message):
         user_data = users_collection.find_one({"user_id": user.id, "token": token})
 
         if user_data:
-            # Update the user's verification status
-            users_collection.update_one(
-                {"user_id": user.id},
-                {"$set": {"verified_until": datetime.now() + timedelta(days=1)}},
-                upsert=True
-            )
-            await message.reply_text(
-                "✅ **Verification Successful!**\n\n"
-                "You can now use the bot for the next 24 hours without any ads or restrictions."
-            )
+            # Check if the token is expired
+            token_expiration = user_data.get("token_expiration", datetime.min)
+            if token_expiration > datetime.now():
+                # Update the user's verification status
+                users_collection.update_one(
+                    {"user_id": user.id},
+                    {"$set": {"verified_until": datetime.now() + timedelta(days=1)}},
+                    upsert=True
+                )
+                await message.reply_text(
+                    f"✅ **Verification Successful!**\n\n"
+                    f"You can now use the bot for the next 24 hours without any ads or restrictions.\n"
+                    f"Your token will expire on: {token_expiration.strftime('%Y-%m-%d %H:%M:%S')}"
+                )
+            else:
+                await message.reply_text(
+                    "❌ **Token Expired!**\n\n"
+                    "Please generate a new token and try verifying again."
+                )
         else:
             await message.reply_text(
                 "❌ **Invalid Token!**\n\n"
@@ -423,10 +432,12 @@ async def check_verification(user_id: int) -> bool:
 async def get_token(user_id: int, bot_username: str) -> str:
     # Generate a random token
     token = os.urandom(16).hex()
+    # Set token expiration time (24 hours from now)
+    token_expiration = datetime.now() + timedelta(hours=24)
     # Update user's verification status in database
     users_collection.update_one(
         {"user_id": user_id},
-        {"$set": {"token": token, "verified_until": datetime.min}},  # Reset verified_until to min
+        {"$set": {"token": token, "token_expiration": token_expiration, "verified_until": datetime.min}},  # Reset verified_until to min
         upsert=True
     )
     # Create verification link
