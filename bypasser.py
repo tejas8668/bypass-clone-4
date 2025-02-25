@@ -2689,6 +2689,70 @@ def adlinkfly(url):
     except BaseException:
         return "Something went wrong, Please try again"
 
+#https://shortxpro.com/trs1KWpOWJ
+def shortxpro(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://go.shortxpro.com/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://www.tb-college.xyz/"
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(7)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
+    
+
+#yamlinks.com https://yamlinks.com/XsyIF3m9
+def yamlinks(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://go.yamlinks.com/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://cryptobats.in/"
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(7)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
+    
+#https://a.urlstox.com/j2L6KER
+def urlstox(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://urlstox.com/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://itechmafiia.com/"
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(7)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
+
 
 # check if present in list
 def ispresent(inlist, url):
@@ -3021,6 +3085,19 @@ def shortners(url):
     elif "https://adlinkfly.in/" in url:
         print("entered adlinkfly:", url)
         return adlinkfly(url)
+
+    elif "https://shortxpro.com/" in url:
+        print("entered shortxpro:", url)
+        return shortxpro(url)
+
+    elif "https://yamlinks.com/" in url:
+        print("entered yamlinks:", url)
+        return yamlinks(url)
+
+    elif "https://a.urlstox.com/" in url:
+        print("entered urlstox:", url)
+        return urlstox(url)
+
 
 
     
