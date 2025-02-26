@@ -140,6 +140,8 @@ shortlinks = """__- Gyanlinks \n\
 - urlstox \n\n\
 - yamlinks \n\
 - shortxpro \n\
+- rglinks \n\
+- brieflyurl \n\
     __"""
 
 
