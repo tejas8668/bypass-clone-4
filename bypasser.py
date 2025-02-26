@@ -2753,6 +2753,48 @@ def urlstox(url):
     except BaseException:
         return "Something went wrong, Please try again"
 
+#https://rglinks.com/Xdbg4M
+def rglinks(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://rglinks.com/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://hindimeguru.com/" #https://quizrent.com/?id=S9JHkRa&plan_id=1
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(9)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
+
+#https://brieflyurl.in/6VnXntPp    
+def brieflyurl(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://brieflyurl.in/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = "https://thespotifypremium.com/" #https://quizrent.com/?id=S9JHkRa&plan_id=1
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    soup = BeautifulSoup(resp.content, "html.parser")
+    inputs = soup.find_all("input")
+    data = {input.get("name"): input.get("value") for input in inputs}
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(9)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
+
 
 # check if present in list
 def ispresent(inlist, url):
@@ -3097,6 +3139,15 @@ def shortners(url):
     elif "https://a.urlstox.com/" in url:
         print("entered urlstox:", url)
         return urlstox(url)
+
+    elif "https://rglinks.com/" in url:
+        print("entered rglinks:", url)
+        return rglinks(url)
+
+    elif "https://brieflyurl.in/" in url:
+        print("entered brieflyurl:", url)
+        return brieflyurl(url)
+
 
 
 
