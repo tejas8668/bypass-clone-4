@@ -2443,10 +2443,13 @@ def vipurl(url):
         code = url.split("/")[-1]
         final_url = f"{DOMAIN}/{code}"
         ref = "https://loanoffer.cc/"
-        h = {"referer": ref}
+        headers = {
+            "referer": ref,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        }
         
         logger.info(f"Sending GET request to: {final_url}")
-        response = client.get(final_url, headers=h)
+        response = client.get(final_url, headers=headers)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         
         logger.info("Parsing HTML response")
@@ -2455,11 +2458,11 @@ def vipurl(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         
         logger.info(f"Extracted data: {data}")
-        h = {"x-requested-with": "XMLHttpRequest"}
+        headers["x-requested-with"] = "XMLHttpRequest"
         time.sleep(9)
         
         logger.info(f"Sending POST request to: {DOMAIN}/links/go")
-        r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers)
         r.raise_for_status()  # Raise an HTTPError for bad responses
         
         url_result = r.json().get("url", "No URL found in response")
@@ -2468,7 +2471,6 @@ def vipurl(url):
     except Exception as e:
         logger.error(f"Error in vipurl function: {e}")
         return f"Something went wrong: {e}"
-
 
 
 #####################################################################################################
