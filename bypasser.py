@@ -2461,7 +2461,7 @@ def vipurl(url):
             try:
                 full_url = scraperapi_url + final_url
                 logger.info(f"Sending GET request to: {full_url} (Attempt {attempt + 1})")
-                response = client.get(full_url, headers=headers, timeout=10)
+                response = client.get(full_url, headers=headers, timeout=30)
                 response.raise_for_status()  # Raise an HTTPError for bad responses
                 break
             except requests.exceptions.RequestException as e:
