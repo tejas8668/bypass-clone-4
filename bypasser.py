@@ -2436,13 +2436,6 @@ def vipurl(url):
     except BaseException:
         return "Something went wrong, Please try again"'''
 
-def get_proxies():
-    return [
-        {"http": "http://proxy1:port", "https": "https://proxy1:port"},
-        {"http": "http://proxy2:port", "https": "https://proxy2:port"},
-        {"http": "http://proxy3:port", "https": "https://proxy3:port"}
-    ]
-
 def vipurl(url):
     try:
         logger.info(f"Starting vipurl function with URL: {url}")
@@ -2458,29 +2451,27 @@ def vipurl(url):
             "User-Agent": ua.random
         }
 
-        proxies = get_proxies()
+        # Replace 'your-scraperapi-key' with your actual ScraperAPI key
+        scraperapi_key = 'ae41aa21904685c4b4e833a381c95bee'
+        scraperapi_url = f"http://api.scraperapi.com?api_key={scraperapi_key}&url="
+
         max_retries = 3
 
         for attempt in range(max_retries):
-            for proxy in proxies:
-                try:
-                    logger.info(f"Sending GET request to: {final_url} (Attempt {attempt + 1}) using proxy {proxy}")
-                    response = client.get(final_url, headers=headers, proxies=proxy, timeout=10)
-                    response.raise_for_status()  # Raise an HTTPError for bad responses
-                    break
-                except requests.exceptions.ProxyError as e:
-                    logger.error(f"Proxy error with proxy {proxy}: {e}")
-                    if attempt == max_retries - 1:
-                        raise
-                    time.sleep(5)  # Wait before retrying
-                except requests.exceptions.RequestException as e:
-                    logger.warning(f"Attempt {attempt + 1} with proxy {proxy} failed: {e}")
-                    if attempt == max_retries - 1:
-                        raise
-                    time.sleep(5)  # Wait before retrying
-            else:
-                continue  # Only execute if the inner loop did NOT break
-            break  # Only execute if the inner loop DID break
+            try:
+                full_url = scraperapi_url + final_url
+                logger.info(f"Sending GET request to: {full_url} (Attempt {attempt + 1})")
+                response = client.get(full_url, headers=headers, timeout=10)
+                response.raise_for_status()  # Raise an HTTPError for bad responses
+                break
+            except requests.exceptions.RequestException as e:
+                logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(5)  # Wait before retrying
+        else:
+            logger.error("All attempts failed")
+            return "All attempts failed"
 
         logger.info("Parsing HTML response")
         soup = BeautifulSoup(response.text, "html.parser")
@@ -2492,15 +2483,12 @@ def vipurl(url):
         time.sleep(9)
 
         logger.info(f"Sending POST request to: {DOMAIN}/links/go")
-        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, proxies=proxy, timeout=10)
+        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, timeout=10)
         r.raise_for_status()  # Raise an HTTPError for bad responses
 
         url_result = r.json().get("url", "No URL found in response")
         logger.info(f"Extracted URL: {url_result}")
         return url_result
-    except requests.exceptions.ProxyError as e:
-        logger.error(f"Proxy error: {e}")
-        return f"Proxy error: {e}"
     except requests.exceptions.RequestException as e:
         logger.error(f"Network error: {e}")
         return f"Network error: {e}"
