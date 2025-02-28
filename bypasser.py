@@ -2376,7 +2376,7 @@ def rslinks(url):
     try:
         return r.json()["url"]
     except BaseException:
-        return "Something went wrong :("'''
+        return "Something went wrong :("
 
 def vipurl(url, retry=False):
     client = cloudscraper.create_scraper(allow_brotli=False)
@@ -2401,7 +2401,29 @@ def vipurl(url, retry=False):
             print(f"Error occurred: {e}. Retrying...")
             return vipurl(url, retry=True)
         else:
-            return "Something went wrong, Please try again..."
+            return "Something went wrong, Please try again..."'''
+
+def vipurl(url):
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://count.vipurl.in/"
+    url = url[:-1] if url[-1] == "/" else url
+    code = url.split("/")[-1]
+    final_url = f"{DOMAIN}/{code}"
+    ref = f"https://loanoffer.cc/"
+    h = {"referer": ref}
+    resp = client.get(final_url, headers=h)
+    
+    response = HtmlResponse(url=final_url, body=resp.content, encoding='utf-8')
+    inputs = response.xpath('//input')
+    data = {input.xpath('@name').get(): input.xpath('@value').get() for input in inputs}
+    
+    h = {"x-requested-with": "XMLHttpRequest"}
+    time.sleep(7)
+    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+    try:
+        return str(r.json()["url"])
+    except BaseException:
+        return "Something went wrong, Please try again"
 
 
 
