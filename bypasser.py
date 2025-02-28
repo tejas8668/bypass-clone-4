@@ -2436,6 +2436,13 @@ def vipurl(url):
     except BaseException:
         return "Something went wrong, Please try again"'''
 
+def get_proxies():
+    return [
+        {"http": "222.252.194.204:8080", "https": "222.252.194.204:8080"},
+        {"http": "47.250.177.202:80", "https": "47.250.177.202:80"},
+        {"http": "65.108.195.47:8080", "https": "65.108.195.47:8080"}
+    ]
+
 def vipurl(url):
     try:
         logger.info(f"Starting vipurl function with URL: {url}")
@@ -2451,27 +2458,29 @@ def vipurl(url):
             "User-Agent": ua.random
         }
 
-        # Replace 'your-scraperapi-key' with your actual ScraperAPI key
-        scraperapi_key = 'ae41aa21904685c4b4e833a381c95bee'
-        scraperapi_url = f"http://api.scraperapi.com?api_key={scraperapi_key}&url="
-
+        proxies = get_proxies()
         max_retries = 3
 
         for attempt in range(max_retries):
+            proxy = random.choice(proxies)
             try:
-                full_url = scraperapi_url + final_url
-                logger.info(f"Sending GET request to: {full_url} (Attempt {attempt + 1})")
-                response = client.get(full_url, headers=headers, timeout=30)
+                logger.info(f"Sending GET request to: {final_url} (Attempt {attempt + 1}) using proxy {proxy}")
+                response = client.get(final_url, headers=headers, proxies=proxy, timeout=10)
                 response.raise_for_status()  # Raise an HTTPError for bad responses
                 break
+            except requests.exceptions.ProxyError as e:
+                logger.error(f"Proxy error with proxy {proxy}: {e}")
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(5)  # Wait before retrying
             except requests.exceptions.RequestException as e:
-                logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                logger.warning(f"Attempt {attempt + 1} with proxy {proxy} failed: {e}")
                 if attempt == max_retries - 1:
                     raise
                 time.sleep(5)  # Wait before retrying
         else:
-            logger.error("All attempts failed")
-            return "All attempts failed"
+            logger.error("All proxy attempts failed")
+            return "All proxy attempts failed"
 
         logger.info("Parsing HTML response")
         soup = BeautifulSoup(response.text, "html.parser")
@@ -2483,41 +2492,21 @@ def vipurl(url):
         time.sleep(9)
 
         logger.info(f"Sending POST request to: {DOMAIN}/links/go")
-        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, timeout=10)
+        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, proxies=proxy, timeout=10)
         r.raise_for_status()  # Raise an HTTPError for bad responses
 
         url_result = r.json().get("url", "No URL found in response")
         logger.info(f"Extracted URL: {url_result}")
         return url_result
+    except requests.exceptions.ProxyError as e:
+        logger.error(f"Proxy error: {e}")
+        return f"Proxy error: {e}"
     except requests.exceptions.RequestException as e:
         logger.error(f"Network error: {e}")
         return f"Network error: {e}"
     except Exception as e:
         logger.error(f"Error in vipurl function: {e}")
         return f"Something went wrong: {e}"
-        
-#####################################################################################################
-# mdisky.link
-def mdisky(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://go.bloggingaro.com/"
-    url = url[:-1] if url[-1] == "/" else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://www.bloggingaro.com/"
-    h = {"referer": ref}
-    resp = client.get(final_url, headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = {input.get("name"): input.get("value") for input in inputs}
-    h = {"x-requested-with": "XMLHttpRequest"}
-    time.sleep(6)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try:
-        return str(r.json()["url"])
-    except BaseException:
-        return "Something went wrong :("
-
 
 #####################################################################################################
 # bitly + tinyurl
