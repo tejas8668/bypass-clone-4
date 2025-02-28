@@ -18,6 +18,13 @@ from os import environ
 import scrapy
 from scrapy.http import HtmlResponse
 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import logging
 
 # Configure logging
@@ -2437,41 +2444,41 @@ def vipurl(url):
 def vipurl(url):
     try:
         logger.info(f"Starting vipurl function with URL: {url}")
-        client = cloudscraper.create_scraper(allow_brotli=False)
-        DOMAIN = "https://count.vipurl.in/"
-        url = url[:-1] if url[-1] == "/" else url
-        code = url.split("/")[-1]
-        final_url = f"{DOMAIN}/{code}"
-        ref = "https://loanoffer.cc/"
-        headers = {
-            "referer": ref,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-        }
         
-        logger.info(f"Sending GET request to: {final_url}")
-        response = client.get(final_url, headers=headers)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
+        # Set up Selenium WebDriver with WebDriver Manager
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # Run in headless mode
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         
-        logger.info("Parsing HTML response")
-        soup = BeautifulSoup(response.text, "html.parser")
-        inputs = soup.find_all("input")
-        data = {input.get("name"): input.get("value") for input in inputs}
+        driver.get(url)
+        logger.info(f"Opened URL: {url}")
+        
+        # Wait for the necessary element to be present
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "input"))
+        )
+        
+        # Extract input elements and their values
+        inputs = driver.find_elements(By.TAG_NAME, "input")
+        data = {input.get_attribute("name"): input.get_attribute("value") for input in inputs}
         
         logger.info(f"Extracted data: {data}")
-        headers["x-requested-with"] = "XMLHttpRequest"
-        time.sleep(9)
         
-        logger.info(f"Sending POST request to: {DOMAIN}/links/go")
-        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers)
-        r.raise_for_status()  # Raise an HTTPError for bad responses
+        # Submit the form or perform the necessary action
+        driver.execute_script("document.forms[0].submit()")
         
-        url_result = r.json().get("url", "No URL found in response")
-        logger.info(f"Extracted URL: {url_result}")
-        return url_result
+        # Wait for the response and extract the final URL
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
+        final_url = driver.current_url
+        logger.info(f"Final URL: {final_url}")
+        
+        driver.quit()
+        return final_url
     except Exception as e:
         logger.error(f"Error in vipurl function: {e}")
         return f"Something went wrong: {e}"
-
 
 #####################################################################################################
 # mdisky.link
