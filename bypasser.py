@@ -15,6 +15,9 @@ from cfscrape import create_scraper
 from json import load
 from os import environ
 
+import scrapy
+from scrapy.http import HtmlResponse
+
 with open("config.json", "r") as f:
     DATA = load(f)
 
