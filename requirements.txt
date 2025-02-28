@@ -19,3 +19,4 @@ scrapy
 selenium
 webdriver_manager
 beautifulsoup4
+fake_useragent
