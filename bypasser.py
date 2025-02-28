@@ -18,6 +18,15 @@ from os import environ
 import scrapy
 from scrapy.http import HtmlResponse
 
+import logging
+
+# Configure logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
 with open("config.json", "r") as f:
     DATA = load(f)
 
@@ -2401,7 +2410,7 @@ def vipurl(url, retry=False):
             print(f"Error occurred: {e}. Retrying...")
             return vipurl(url, retry=True)
         else:
-            return "Something went wrong, Please try again..."'''
+            return "Something went wrong, Please try again..."
 
 def vipurl(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
@@ -2423,7 +2432,42 @@ def vipurl(url):
     try:
         return str(r.json()["url"])
     except BaseException:
-        return "Something went wrong, Please try again"
+        return "Something went wrong, Please try again"'''
+
+def vipurl(url):
+    try:
+        logger.info(f"Starting vipurl function with URL: {url}")
+        client = cloudscraper.create_scraper(allow_brotli=False)
+        DOMAIN = "https://count.vipurl.in/"
+        url = url[:-1] if url[-1] == "/" else url
+        code = url.split("/")[-1]
+        final_url = f"{DOMAIN}/{code}"
+        ref = "https://loanoffer.cc/"
+        h = {"referer": ref}
+        
+        logger.info(f"Sending GET request to: {final_url}")
+        response = client.get(final_url, headers=h)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        
+        logger.info("Parsing HTML response")
+        soup = BeautifulSoup(response.text, "html.parser")
+        inputs = soup.find_all("input")
+        data = {input.get("name"): input.get("value") for input in inputs}
+        
+        logger.info(f"Extracted data: {data}")
+        h = {"x-requested-with": "XMLHttpRequest"}
+        time.sleep(9)
+        
+        logger.info(f"Sending POST request to: {DOMAIN}/links/go")
+        r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
+        r.raise_for_status()  # Raise an HTTPError for bad responses
+        
+        url_result = r.json().get("url", "No URL found in response")
+        logger.info(f"Extracted URL: {url_result}")
+        return url_result
+    except Exception as e:
+        logger.error(f"Error in vipurl function: {e}")
+        return f"Something went wrong: {e}"
 
 
 
