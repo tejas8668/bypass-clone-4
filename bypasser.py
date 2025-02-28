@@ -19,6 +19,8 @@ import scrapy
 from scrapy.http import HtmlResponse
 import logging
 
+from fake_useragent import UserAgent
+
 # Configure logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -2436,6 +2438,7 @@ def vipurl(url):
 def vipurl(url):
     try:
         logger.info(f"Starting vipurl function with URL: {url}")
+        ua = UserAgent()
         client = cloudscraper.create_scraper(allow_brotli=False)
         DOMAIN = "https://count.vipurl.in/"
         url = url[:-1] if url[-1] == "/" else url
@@ -2444,16 +2447,38 @@ def vipurl(url):
         ref = "https://loanoffer.cc/"
         headers = {
             "referer": ref,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+            "User-Agent": ua.random
         }
 
-        # Retry mechanism
+        proxies = {
+            "http": "http://your_proxy_server",
+            "https": "https://your_proxy_server",
+        }
+
+        # Retry mechanism with specific checks
         for attempt in range(3):
             try:
                 logger.info(f"Sending GET request to: {final_url} (Attempt {attempt + 1})")
-                response = client.get(final_url, headers=headers, timeout=10)
+                response = client.get(final_url, headers=headers, proxies=proxies, timeout=10)
                 response.raise_for_status()  # Raise an HTTPError for bad responses
                 break
+            except requests.exceptions.HTTPError as e:
+                if response.status_code == 403:
+                    logger.error("403 Forbidden: Access is denied.")
+                    # Determine the cause of the 403 error
+                    if "IP address" in str(e):
+                        logger.error("IP blocking detected.")
+                    elif "User-Agent" in str(e):
+                        logger.error("User-Agent restriction detected.")
+                    elif "referer" in str(e):
+                        logger.error("Referer header issue detected.")
+                    else:
+                        logger.error("Potential Cloudflare protection detected.")
+                else:
+                    logger.error(f"HTTP error: {e}")
+                if attempt == 2:
+                    raise
+                time.sleep(5)  # Wait before retrying
             except (requests.exceptions.RequestException, cloudscraper.exceptions.CloudflareChallengeError) as e:
                 logger.warning(f"Attempt {attempt + 1} failed: {e}")
                 if attempt == 2:
@@ -2470,7 +2495,7 @@ def vipurl(url):
         time.sleep(9)
 
         logger.info(f"Sending POST request to: {DOMAIN}/links/go")
-        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, timeout=10)
+        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, proxies=proxies, timeout=10)
         r.raise_for_status()  # Raise an HTTPError for bad responses
 
         url_result = r.json().get("url", "No URL found in response")
@@ -2482,7 +2507,6 @@ def vipurl(url):
     except Exception as e:
         logger.error(f"Error in vipurl function: {e}")
         return f"Something went wrong: {e}"
-
 #####################################################################################################
 # mdisky.link
 def mdisky(url):
