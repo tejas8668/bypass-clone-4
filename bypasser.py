@@ -19,6 +19,9 @@ import scrapy
 from scrapy.http import HtmlResponse
 import logging
 
+from fake_useragent import UserAgent
+import random
+
 # Configure logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
