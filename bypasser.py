@@ -2435,6 +2435,13 @@ def vipurl(url):
     except BaseException:
         return "Something went wrong, Please try again"'''
 
+def get_proxies():
+    return [
+        {"http": "http://proxy1:port", "https": "https://proxy1:port"},
+        {"http": "http://proxy2:port", "https": "https://proxy2:port"},
+        {"http": "http://proxy3:port", "https": "https://proxy3:port"}
+    ]
+
 def vipurl(url):
     try:
         logger.info(f"Starting vipurl function with URL: {url}")
@@ -2450,40 +2457,29 @@ def vipurl(url):
             "User-Agent": ua.random
         }
 
-        proxies = {
-            "http": "http://your_proxy_server",
-            "https": "https://your_proxy_server",
-        }
+        proxies = get_proxies()
+        max_retries = 3
 
-        # Retry mechanism with specific checks
-        for attempt in range(3):
-            try:
-                logger.info(f"Sending GET request to: {final_url} (Attempt {attempt + 1})")
-                response = client.get(final_url, headers=headers, proxies=proxies, timeout=10)
-                response.raise_for_status()  # Raise an HTTPError for bad responses
-                break
-            except requests.exceptions.HTTPError as e:
-                if response.status_code == 403:
-                    logger.error("403 Forbidden: Access is denied.")
-                    # Determine the cause of the 403 error
-                    if "IP address" in str(e):
-                        logger.error("IP blocking detected.")
-                    elif "User-Agent" in str(e):
-                        logger.error("User-Agent restriction detected.")
-                    elif "referer" in str(e):
-                        logger.error("Referer header issue detected.")
-                    else:
-                        logger.error("Potential Cloudflare protection detected.")
-                else:
-                    logger.error(f"HTTP error: {e}")
-                if attempt == 2:
-                    raise
-                time.sleep(5)  # Wait before retrying
-            except (requests.exceptions.RequestException, cloudscraper.exceptions.CloudflareChallengeError) as e:
-                logger.warning(f"Attempt {attempt + 1} failed: {e}")
-                if attempt == 2:
-                    raise
-                time.sleep(5)  # Wait before retrying
+        for attempt in range(max_retries):
+            for proxy in proxies:
+                try:
+                    logger.info(f"Sending GET request to: {final_url} (Attempt {attempt + 1}) using proxy {proxy}")
+                    response = client.get(final_url, headers=headers, proxies=proxy, timeout=10)
+                    response.raise_for_status()  # Raise an HTTPError for bad responses
+                    break
+                except requests.exceptions.ProxyError as e:
+                    logger.error(f"Proxy error with proxy {proxy}: {e}")
+                    if attempt == max_retries - 1:
+                        raise
+                    time.sleep(5)  # Wait before retrying
+                except requests.exceptions.RequestException as e:
+                    logger.warning(f"Attempt {attempt + 1} with proxy {proxy} failed: {e}")
+                    if attempt == max_retries - 1:
+                        raise
+                    time.sleep(5)  # Wait before retrying
+            else:
+                continue  # Only execute if the inner loop did NOT break
+            break  # Only execute if the inner loop DID break
 
         logger.info("Parsing HTML response")
         soup = BeautifulSoup(response.text, "html.parser")
@@ -2495,18 +2491,22 @@ def vipurl(url):
         time.sleep(9)
 
         logger.info(f"Sending POST request to: {DOMAIN}/links/go")
-        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, proxies=proxies, timeout=10)
+        r = client.post(f"{DOMAIN}/links/go", data=data, headers=headers, proxies=proxy, timeout=10)
         r.raise_for_status()  # Raise an HTTPError for bad responses
 
         url_result = r.json().get("url", "No URL found in response")
         logger.info(f"Extracted URL: {url_result}")
         return url_result
+    except requests.exceptions.ProxyError as e:
+        logger.error(f"Proxy error: {e}")
+        return f"Proxy error: {e}"
     except requests.exceptions.RequestException as e:
         logger.error(f"Network error: {e}")
         return f"Network error: {e}"
     except Exception as e:
         logger.error(f"Error in vipurl function: {e}")
         return f"Something went wrong: {e}"
+        
 #####################################################################################################
 # mdisky.link
 def mdisky(url):
