@@ -13,3 +13,5 @@ curl-cffi
 
 pymongo[srv]==4.2.0
 python-telegram-bot[webhooks]==20.3
+
+scrapy
