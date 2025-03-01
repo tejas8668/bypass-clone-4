@@ -2795,7 +2795,7 @@ def adlinkfly(url):
     referers = [
         "https://go.adlinkfly.in/",
         "https://earn.newsaddapro.in/",
-        "https://loan.techwani.in/"'
+        "https://loan.techwani.in/",
         "https://cash.creditsgoal.com/"
     ]
     
